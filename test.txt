@@ -1,0 +1,7 @@
+expired when it wakes up. This means that you only have one parallel goroutine running, no matter how many timers you use. Spawning
+a goroutine is quite cheap, but not spawning a goroutine is usually even cheaper.
+It’s not always quite so clear cut. The timer,
+as currently implemented, uses a mutex to protect the heap, which means that there is the possibility of contention if you are concurrently creating a lot of timers. In practice, however, it’s always likely to be more efficient to use a timer than implement your own version.
+If you create a timer with NewTimer, then it
+will send the current nanosecond time along the channel created as its C field when it expires. If you call AfterFunc() instead, then the channel will not be used. The function that you pass will be called in its own goroutine when the timer expires.
+Timers do not make any real-time guarantees. The timer is guaranteed not to be triggered before the timeout expires, but it may be triggered any time after that, depending on the machine load, the accuracy of the available timers, the operating system’s scheduler, and various other concerns.

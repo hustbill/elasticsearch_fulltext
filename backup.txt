@@ -1,0 +1,227 @@
+{ "create" : { "_index" : "products", "_type" : "product", "_id" : "2" } }
+{"name": "annual_fee", "description": "annual_fee_desc","permalink": "Annual-Fee-702", "tax_category_id": 0}
+
+{ "create" : { "_index" : "products", "_type" : "product", "_id" : "3" } }
+{"name": "annual_fee", "description": "annual_fee_desc","permalink": "Annual-Fee-708", "tax_category_id": 0}
+
+curl "http://localhost:9200/test_attachments/_search?pretty=true&q=Data model"
+
+curl "http://localhost:9200/test_attachments/_search?pretty=true&q=Data model"
+
+curl -X delete "localhost:9200/events"
+
+curl -X PUT "localhost:9200/events" -d '{
+  "settings" : { "index" : { "number_of_shards" : 1, "number_of_replicas" : 0 }}
+}'
+
+
+curl -X POST http://localhost:9200/events/attachment -d '{
+  "mappings" : {
+    "document" : {
+      "properties" : {
+        "content" : {
+          "type" : "attachment",
+          "fields" : {
+            "content"  : { "store" : "yes" },
+            "author"   : { "store" : "yes" },
+            "title"    : { "store" : "yes", "analyzer" : "english"},
+            "date"     : { "store" : "yes" },
+            "keywords" : { "store" : "yes", "analyzer" : "keyword" },
+            "_name"    : { "store" : "yes" },
+            "_content_type" : { "store" : "yes" },
+              "description"    : { "store" : "yes" },
+            "hostName"    : { "store" : "yes" },
+             "address"    : { "store" : "yes" },
+              "locationName"    : { "store" : "yes" },    
+            "client_id" : { "store" : "yes" }
+          }
+        }
+      }
+    }
+  }
+}'
+ 
+
+
+curl -X PUT "localhost:9200/events/attachment/_mapping" -d '{
+  "attachment" : {
+    "properties" : {
+      "file" : {
+        "type" : "attachment",
+        "fields" : {
+          "file" : { "term_vector":"with_positions_offsets", "store":"yes" }
+           "content"  : { "store" : "yes" },
+            "author"   : { "store" : "yes" },
+            "title"    : { "store" : "yes"},
+            "date"     : { "store" : "yes" },
+            "keywords" : { "store" : "yes", "analyzer" : "keyword" },
+             "description"    : { "store" : "yes" },
+            "hostName"    : { "store" : "yes" },
+             "address"    : { "store" : "yes" },
+              "locationName"    : { "store" : "yes" },    
+            "client_id" : { "store" : "yes" }
+          
+        }
+      }
+    }
+  }
+}'
+
+
+curl -X PUT "localhost:9200/test/attachment/_mapping" -d '{
+  "attachment" : {
+    "properties" : {
+      "file" : {
+        "type" : "attachment",
+        "fields" : {
+          "title" : { "store" : "yes" },
+			"description"    : { "store" : "yes" },
+            "hostName"    : { "store" : "yes" },
+            "address"    : { "store" : "yes" },
+             "locationName"    : { "store" : "yes" },    
+            "client_id" : { "store" : "yes" },
+          "file" : { "term_vector":"with_positions_offsets", "store":"yes" }
+        }
+      }
+    }
+  }
+}'
+
+
+curl "localhost:9200/_search?pretty=true" -d '{
+  "fields" : ["title"],
+  "query" : {
+    "query_string" : {
+      "query" : "Buckinghamshire"
+    }
+  },
+  "highlight" : {
+    "fields" : {
+      "file" : {}
+    }
+  }
+}'
+
+
+
+curl -X POST http://localhost:9200/test_attachments -d '{
+  "mappings" : {
+    "document" : {
+      "properties" : {
+        "content" : {
+          "type" : "attachment",
+          "fields" : {
+            "content"  : { "store" : "yes" },
+            "author"   : { "store" : "yes" },
+            "title"    : { "store" : "yes", "analyzer" : "english"},
+            "date"     : { "store" : "yes" },
+            "keywords" : { "store" : "yes", "analyzer" : "keyword" },
+            "_name"    : { "store" : "yes" },
+            "_content_type" : { "store" : "yes" }
+          }
+        }
+      }
+    }
+  }
+}'
+ 
+
+
+curl "http://localhost:9200/test_attachments/_search?pretty=true" -d '{
+   "query": {
+		match_all" : {"Data model" }
+    }
+}'
+
+Pivot
+
+curl "http://localhost:9200/test_attachments/_search?pretty=true" -d '{
+  "query": {
+        "filtered": {
+            "filter": {
+                "term": { "gender": "female" }
+            }
+        }
+    }
+}'
+
+curl "http://localhost:9200/test_attachments/_analyze?analyzer=standard"  -d '{
+   "query" : {
+      "match_all" : {"Data model" }
+   },
+   "script_fields": {
+      "terms" : {
+        "script": "doc[field].values",
+        "params": {
+            "field": "my_attachment"
+         }
+       }
+    }
+ }'
+
+
+curl "http://localhost:9200/test_attachments/_analyze?analyzer=standard"  -d '{
+   "query" : {
+      "match_all" : { }
+   },
+   "script_fields": {
+      "terms" : {
+        "script": "doc[field].values",
+        "params": {
+            "field": "Data model"
+         }
+       }
+    }
+ }'
+
+
+curl 'http://localhost:9200/test_attachments/_search?pretty=true' -d '{
+   "query" : {
+      "match_all" : { }
+   },
+   "script_fields": {
+      "terms" : {
+        "script": "doc[field].values",
+        "params": {
+            "field": "my_attachment"
+         }
+       }
+    }
+ }'
+
+
+{ "name" : "Cain Ullah", "role": "Founder", "bio": "Cain is a Founder of Red Badger, the non-techy responsible for business operations. He's worked on lots of innovative projects - from prototype to delivery - for some very big brands. He also likes to clog up the Red Badger mailroom with a constant influx of vinyl purchases to add to his ever-increasing collection." }
+{ "create" : { "_index" : "animal", "_type" : "badger", "_id" : "2" } }
+{ "name" : "David Wynne", "role": "Founder", "bio": "Founder, developer, and lover (not a hater). David has been making stuff work really well for over 14 years, five of those at Microsoft in the UK, USA and around Europe. He has lead teams, introduced agile into organisations and loves the detail. One day David will write a novel. A really long and interesting one." }
+
+
+{"create": {  "_index": "products",  "_type": "product",  "_id": "2"}}
+{"name": "annual_fee",
+    "description": "<p>Annual Fee</p>\r\n",
+    "permalink": "Annual-Fee-702",
+    "tax_category_id": 0,
+    "shipping_category_id": 0,
+    "deleted_at": "0001-01-01T00:00:00Z",
+    "meta_description": "",
+    "meta_keywords": "",
+    "position": 0,
+    "is_featured": false,
+    "can_discount": false,
+    "distributor_only_membership": false
+}
+
+{"create": {  "_index": "products",  "_type": "product",  "_id": "2"}}
+{ 
+    "name": "annual_fee",
+    "description": "<p>Annual Fee</p>\r\n",
+    "permalink": "Annual-Fee-702",
+    "tax_category_id": 0,
+    "shipping_category_id": 0,
+    "deleted_at": "0001-01-01T00:00:00Z",
+    "meta_description": "",
+    "meta_keywords": "",
+    "position": 0,
+    "is_featured": false,
+    "can_discount": false,
+    "distributor_only_membership": false
+}

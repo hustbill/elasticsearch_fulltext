@@ -1,0 +1,116 @@
+curl -X DELETE "localhost:9200/events"
+
+curl -X PUT "localhost:9200/events" -d '{
+  "settings" : { "index" : { "number_of_shards" : 1, "number_of_replicas" : 0 }}
+}'
+
+curl -X PUT "localhost:9200/events/attachment/_mapping" -d '{
+  "attachment" : {
+    "properties" : {
+      "file" : {
+        "type" : "attachment",
+        "fields" : {
+          "title" : { "store" : "yes" },
+          "file" : { "term_vector":"with_positions_offsets", "store":"yes" },
+          "userId" : { "store" : "yes" }
+        }
+      }
+    }
+  }
+}'
+
+
+curl -X POST http://localhost:9200/test_attachments -d '{
+  "mappings" : {
+    "document" : {
+      "properties" : {
+        "content" : {
+          "type" : "attachment",
+          "fields" : {
+            "content"  : { "store" : "yes" },
+            "author"   : { "store" : "yes" },
+            "title"    : { "store" : "yes", "analyzer" : "english"},
+            "date"     : { "store" : "yes" },
+            "keywords" : { "store" : "yes", "analyzer" : "keyword" },
+            "userId" : { "store" : "yes" },
+            "_name"    : { "store" : "yes" },            
+            "_content_type" : { "store" : "yes" }
+          }
+        }
+      }
+    }
+  }
+}'
+
+
+curl -X PUT "localhost:9200/events/_mapping" -d '{
+  "events" : {
+    "properties" : {
+      "file" : {
+        "type" : "attachment",
+        "fields" : {
+          "title" : { "store" : "yes" },
+          "file" : { "term_vector":"with_positions_offsets", "store":"yes" }
+        }
+      }
+    }
+  }
+}'
+
+
+
+curl "localhost:9200/_search?pretty=true" -d '{
+  "fields" : ["title"],
+  "query" : {
+    "query_string" : {
+      "query" : "5399225f9b4871852ee13945"
+    }
+  },
+  "highlight" : {
+    "fields" : {
+      "file" : {}
+    }
+  }
+}'
+
+
+
+
+curl "localhost:9200/_search?pretty=true" -d '{
+  "fields" : ["userId"],
+  "query" : {
+    "query_string" : {
+      "query" : "5399225f9b4871852ee13945"
+    }
+  },
+  "highlight" : {
+    "fields" : {
+      "file" : {}
+    }
+  }
+}'
+
+
+curl "localhost:9200/_search?pretty=true" -d '{
+  "fields" : ["userId"],
+  "query" : {
+    "query_string" : {
+      "query" : "11308"
+    }
+  },
+  "highlight" : {
+    "fields" : {
+      "file" : {}
+    }
+  }
+}'
+
+-- create multiple lines in elastic search
+
+
+{ "index" : { "_index" : "test", "_type" : "type1", "_id" : "7" } }
+{"id":"5399223c9b4871852ee13944","active":true,"isPublic":true,"userId":11308,"hostName":"123","hostEmail":"","locationName":"123","title":"123","description":"123","address":{"firstName":"123","lastName":"23","street":"123","city":"123","zipCode":"123","stateName":"Arizona","countryISO":"US","countryName":"United States"},"startTime":"2014-06-18 20:00:00-07","endTime":"2014-06-17 22:00:00-07","yesCount":1,"noCount":0,"maybeCount":0,"noReplyCount":1,"created_at":"2014-06-11 20:45:00-07","updated_at":"2014-06-17 05:59:31-07","client_id":"539918dbbcb3f47428db887a","type_id":"5358c2d57538857a42b18c6c","template_id":"5358c2d57538857a42b18c6d"}
+{ "index" : { "_index" : "test", "_type" : "type1", "_id" : "8" } }
+{"id":"5399225f9b4871852ee13945","active":true,"isPublic":true,"userId":11308,"hostName":"123","hostEmail":"","locationName":"123","title":"123","description":"123","address":{"firstName":"123","lastName":"23","street":"123","city":"123","zipCode":"123","stateName":"Arizona","countryISO":"US","countryName":"United States"},"startTime":"2014-06-18 20:00:00-07","endTime":"2014-06-17 22:00:00-07","yesCount":0,"noCount":0,"maybeCount":0,"noReplyCount":0,"created_at":"2014-06-11 20:45:35-07","updated_at":"2014-06-11 20:45:35-07","client_id":"539918dbbcb3f47428db887a","type_id":"5358c2d57538857a42b18c6c","template_id":"5358c2d57538857a42b18c6d"}
+{ "index" : { "_index" : "test", "_type" : "type1", "_id" : "9" } }
+{"id":"5399229b9b4871852ee13946","active":true,"isPublic":true,"userId":11308,"hostName":"123","hostEmail":"","locationName":"123","title":"123","description":"123","address":{"firstName":"123","lastName":"123","street":"123","city":"123","zipCode":"123","stateName":"Arkansas","countryISO":"US","countryName":"United States"},"startTime":"2014-06-16 21:00:00-07","endTime":"2014-06-17 20:00:00-07","yesCount":0,"noCount":0,"maybeCount":0,"noReplyCount":1,"created_at":"2014-06-11 20:46:35-07","updated_at":"2014-06-11 20:46:35-07","client_id":"539918dbbcb3f47428db887a","type_id":"5358c2d57538857a42b18c6c","template_id":"5358c2d57538857a42b18c6d"}
