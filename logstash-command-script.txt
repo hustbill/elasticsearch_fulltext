@@ -1,0 +1,49 @@
+logstash -e 'input { stdin { } } output { elasticsearch { host => localhost protocol => “http” port => “9200" } }'
+
+
+logstash -e 'input { file { path => "/var/log/*.log" type => "jetty" } } output { elasticsearch { host => localhost protocol => "http" port => "9200" } }'
+
+
+
+logstash -e 'input { file { path => "/var/log/message_service/message_service-out.log" type => "jetty" } } output { elasticsearch { host => localhost protocol => "http" port => "9200" } }'
+
+[elasticsearch-1.4]
+name=Elasticsearch repository for 1.4.x packages
+baseurl=http://packages.elasticsearch.org/elasticsearch/1.4/centos
+gpgcheck=1
+gpgkey=http://packages.elasticsearch.org/GPG-KEY-elasticsearch
+enabled=1
+
+
+https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.2.noarch.rpm
+
+
+input {
+	 file {
+	  path => "/var/log/nodejs-email-service/service.log"
+	   start_position => beginning 
+	} 
+}
+filter {
+    grok {
+        match => { "message" => "%{shipping-method-name}"}
+    }
+    geoip {
+        source => "hostname"
+    }
+}
+output { 
+	elasticsearch { 
+		host => localhost
+ 		protocol => "http" 
+ 		port => "9200"
+ 	 }
+ 	 stdout {}
+ }
+ 
+ input {
+    file {
+        path => "/path/to/groksample.log"
+        start_position => beginning 
+    }
+}
