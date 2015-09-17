@@ -1,3 +1,25 @@
+
+Sep 16, 2015
+
+curl -XPUT http://localhost:9200/logstash-2015.05.18 -d '
+{
+ "mappings" : {
+  "log" : {
+   "properties" : {
+    "geo" : {
+     "properties" : {
+      "coordinates" : {
+       "type" : "geo_point"
+      }
+     }
+    }
+   }
+  }
+ }
+}
+';
+
+
 logstash -e 'input { stdin { } } output { elasticsearch { host => localhost protocol => “http” port => “9200" } }'
 
 
@@ -40,6 +62,25 @@ output {
  	 }
  	 stdout {}
  }
+ 
+ curl -XGET 'http://127.0.0.1:9200/logstash-2015.09.16/_search?pretty=1'  -d '
+{
+   "query" : {
+      "text" : {
+         "text" : "HsZY1r0133Xq6oY01"
+      }
+   },
+   "highlight" : {
+      "fields" : {
+         "text" : {}
+      }
+   }
+}
+'
+ 
+ curl -XGET 'localhost:9200/logstash-2015.09.16/_search?q=response=401'
+ 
+ curl -XGET 'localhost:9200/logstash-2015.09.16/_search?q=_source=Buffalo'
  
  input {
     file {
